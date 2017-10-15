@@ -33,6 +33,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('unfollow', 'UserFollowController@destroy')->name('user.unfollow');
         Route::get('followings', 'UsersController@followings')->name('users.followings');
         Route::get('followers', 'UsersController@followers')->name('users.followers');
+        
+        Route::post('oki_follow', 'UserMicropostController@store')->name('user.oki_follow');
+        Route::delete('oki_unfollow', 'UserMicropostController@destroy')->name('user.oki_unfollow');
+        Route::get('oki_followings', 'UsersController@oki_followings')->name('users.oki_followings');
+        //Route::get('oki_followers', 'UsersController@oki_followers')->name('users.oki_followers');
     });
     
     Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);

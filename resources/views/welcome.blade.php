@@ -17,6 +17,16 @@
                 @endif
             </div>
         </div>
+        <div class="row">
+            <aside class="col-xs-4">
+               
+            </aside>
+            <div class="col-xs-4">
+               
+                    <h3><a href="{{ route('users.oki_followings', Auth::user()->id) }}">お気に入り一覧へ</a></h3>
+                 
+            </div>
+        </div>
     @else
         <div class="center jumbotron">
             <div class="text-center">

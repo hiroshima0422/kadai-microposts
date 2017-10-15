@@ -29,6 +29,7 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $fillable = ['name', 'email', 'password'];
+    
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -95,6 +96,65 @@ class User extends Model implements AuthenticatableContract,
         $follow_user_ids = $this->followings()->lists('users.id')->toArray();
         $follow_user_ids[] = $this->id;
         return Micropost::whereIn('user_id', $follow_user_ids);
+    }
+    
+    //**********************************
+    //お気に入り
+    //**********************************
+    
+    public function oki_followings() 
+    {
+        return $this->belongsToMany(Micropost::class, 'user_micropost', 'user_id', 'micropost_id')->withTimestamps();
+    }
+    
+    public function oki_follow($micropostId)
+    {
+        // 既にフォローしているかの確認
+        $oki_exist = $this->is_oki_following($micropostId);
+        // 自分自身ではないかの確認
+        //$oki_its_me = $this->id == $micropostId;
+        
+        //if ($oki_exist || $oki_its_me) {
+        if ($oki_exist) {
+            // 既にフォローしていれば何もしない
+            return false;
+        } else {
+            // 未フォローであればフォローする
+            
+            //echo '(Auth::user()<br>';
+            //var_dump(\Auth::user());
+            
+            //echo '$micropostId<br>';
+            //var_dump($micropostId);
+            //echo '$this->oki_followings()<br>';
+            //dd($this->oki_followings()->count());
+            //App\Message::where('id', 1)->update(['content' => 'updated']);
+            $this->oki_followings()->attach($micropostId);
+            return true;
+        }
+    }
+    
+    public function oki_unfollow($micropostId)
+    {
+        // 既にフォローしているかの確認
+        $oki_exist = $this->is_oki_following($micropostId);
+        // 自分自身ではないかの確認
+        //$oki_its_me = $this->id == $micropostId;
+        
+        //if ($oki_exist && !$oki_its_me) {
+        if ($oki_exist) {
+            // 既にフォローしていればフォローを外す
+            $this->oki_followings()->detach($micropostId);
+            return true;
+        } else {
+            // 未フォローであれば何もしない
+            return false;
+        }
+    }
+    
+    public function is_oki_following($micropostId) {
+        //dd($this->oki_followings()->where('micropost_id', $micropostId));
+        return $this->oki_followings()->where('micropost_id', $micropostId)->exists();
     }
     
 }
